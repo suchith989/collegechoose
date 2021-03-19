@@ -1,5 +1,5 @@
 let req = new XMLHttpRequest();
-var Chart = require('chart.js');
+
 var json_data= {};
 
 
