@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -19,9 +20,17 @@
         <div class="row">
             <p>Start selecting your college easy way. Select your desired branch and we will provide you with top colleges that you can join into.</p>
         </div>
-        <div class="row">
+        <div class="col-75">
+        <label for="options">Choose the basis for selection</label>
+                <select name="options" id="options" onchange="main()">
+                    <option value="branch">Based on branch</option>
+                    <option value="no-branch">Any branch</option>
+                  </select>
+        </div>
+        
+        <div class="row" id="branch">
             <div class="col-25">
-                <label for="">Branch</label>
+                <label for="BRANCH">Branch</label>
             </div>
             <div class="col-75">
                 <input type="radio" id="ECE" name="BRANCH" value="ECE">
@@ -38,7 +47,7 @@
                 <label for="CIV">CIV</label>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="caste">
             <div class="col-25">
                 <label for="">Caste</label>
             </div>
@@ -61,7 +70,7 @@
                 <label  for="ST">ST</label>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="gender">
             <div class="col-25">
                 <label for="">Gender</label>
             </div>
@@ -72,7 +81,7 @@
                 <label for="GIRLS">Female</label>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="rank">
             <div class="col-25">
                 <label for="RANK">Rank</label>
             </div>
@@ -80,14 +89,19 @@
                 <input type="number" id="RANK" >
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="button">
             <button class="btn" type="button" >Submit</button>
         </div>
+        
     </div>
-    <div class="result">
+    <div class="result" style="position: relative; height: 40vh; width: 80vw; align-items: center; overflow: auto;" >
+        
+        <table id="mytable" >
+
+        </table>
         <canvas id="myChart" width="200px" height="200px"></canvas>
     </div>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    
    <script src="index.js"></script>
 </body>
 </html>
