@@ -1,5 +1,4 @@
 let req = new XMLHttpRequest();
-
 var json_data= {};
 
 
@@ -34,19 +33,28 @@ btn[0].addEventListener("click",function(){
         submit=true;
         rank=parseInt(rank);
     }
-    console.log(rank);
+    
     var cst=caste+" "+gender;
-    console.log(branch);
+ 
     if(submit){
         //getting the data from web server JSONBIN.io
 
     req.onreadystatechange = () => {
         if (req.readyState == XMLHttpRequest.DONE) {
-        json_data = JSON.parse(req.responseText);
-        console.log(json_data);
-        var new_json=JSON.parse(JSON.stringify(get_data(json_data,rank,cst,branch)));
-        console.log(new_json);
-        render_data(new_json,cst);
+            json_data = JSON.parse(req.responseText);
+            
+            var new_json=JSON.parse(JSON.stringify(get_data(json_data,rank,cst,branch)));
+            var res =[];
+            var len=(Object.keys(new_json).length);
+            for(let i =0; i< len; i++){
+                res.push(new_json[i]);
+            }
+           
+            res.sort(function (a,b){
+               return a[cst] - b[cst];
+            })
+          
+            render_data(res,cst, rank);
         }
     };
   
@@ -61,12 +69,11 @@ btn[0].addEventListener("click",function(){
 function get_data(json_data1,rank,caste,branch){
     var new_data= {};
     var j=0;
-    console.log(rank);
-    console.log(caste);
-    console.log(branch);
-    console.log(json_data1.length)
+    
     for(let i=0;i< json_data1.length; i++){
-          if(json_data1[i].BRANCH==branch && json_data1[i][caste] >= rank && json_data1[i][caste]<=rank+20000){
+            var rk_low=rank-1000>0?rank-1000:rank;
+            var rk_high=rank+20000;
+          if(json_data1[i].BRANCH==branch && json_data1[i][caste] >= rk_low && json_data1[i][caste]<= rk_high){
               new_data[j]= json_data[i];
               j++;
           }
@@ -74,16 +81,25 @@ function get_data(json_data1,rank,caste,branch){
     return new_data;
 }
 
-function render_data(json_file,caste){
-    var labels= [];
-    var data= [];
-    var len=(Object.keys(json_file).length);
+function render_data(json_file,caste,rank) {
+    var labels1= [];
+    var data1= [];
+    var data2= [];
+    var len=(json_file.length);
     for(let  i=0; i<len; i++){
-          labels.push(json_file[i]["INST CODE"]);
-          data.push(json_file[i][caste]);
+        labels1.push(json_file[i]["INST CODE"]);
+        if(rank > json_file[i][caste]){
+         
+          data1.push(json_file[i][caste]);
+        data2.length++;
+         }
+          else{
+            data2.push(json_file[i][caste]); 
+            data1.length++;
+          }
     }
-    console.log(data);
-    console.log(labels);
+
+   
     if(window.myChart instanceof Chart)
     {
         window.myChart.destroy();
@@ -92,17 +108,51 @@ function render_data(json_file,caste){
     var myChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: labels,
+        labels: labels1,
         datasets: [{
-            label: 'College list',
-            data: data,
+            label: 'Safe Colleges',
+            data: data2,
             backgroundColor: 
-                'rgba(255, 99, 132, 0.2)',
+                'rgba(0, 0, 0, 0.2)',
             borderColor: 
-                'rgba(255, 159, 64, 1)',
-            borderWidth: 1
+                'rgba(0, 0, 0, 1)',
+            borderWidth: 1,
+            spanGaps: false
+        },{
+            label: 'Ambitious Colleges',
+            data: data1,
+            backgroundColor: 
+                'rgba(200, 120, 132, 0.2)',
+            borderColor: 
+                'rgba(200, 120, 64, 1)',
+            borderWidth: 1,
+            spanGaps: false
         }]
-    }
+    },
+    options: {
+      responsive: true,
+      scales: {
+        xAxes: [ {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'College ID'
+          },
+          ticks: {
+            major: {
+              fontStyle: 'bold',
+              fontColor: '#FF0000'
+            }
+          }
+        } ],
+        yAxes: [ {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'CutOFF'
+          }}]
+    } 
     
-});
+    }});
+
 }
