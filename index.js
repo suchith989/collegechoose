@@ -1,21 +1,47 @@
 let req = new XMLHttpRequest();
 var json_data= {};
 
+function main(){
+    var option= document.getElementById("options").value;
+    
 
-
-
-var btn=document.getElementsByClassName('btn');
+    if(option=="branch"){
+        
+        document.getElementById("rank").style.display="block";
+        document.getElementById("gender").style.display="block";
+        document.getElementById("caste").style.display="block";
+        document.getElementById("button").style.display="block";
+        document.getElementById("branch").style.display="block";
+    }else{
+        document.getElementById("rank").style.display="block";
+        document.getElementById("gender").style.display="block";
+        document.getElementById("caste").style.display="block";
+        document.getElementById("button").style.display="block";
+        document.getElementById("branch").style.display="block";
+        document.getElementById("branch").style.display="none";
+    }
+    var btn=document.getElementsByClassName('btn');
 btn[0].addEventListener("click",function(){
-    var checked_branch= document.querySelectorAll('input[name="BRANCH"]:checked');
-    var branch;
+    
     var checked_caste= document.querySelectorAll('input[name="CASTE"]:checked');
     var caste;
     var checked_gender= document.querySelectorAll('input[name="GENDER"]:checked');
     var gender;
-    
     var submit;
-    if(checked_branch.length>0 && checked_caste.length>0 && checked_gender.length>0 ){
-        branch= checked_branch[0].value;
+    var branch='';
+    if(option=="branch"){
+        var checked_branch= document.querySelectorAll('input[name="BRANCH"]:checked');
+        
+        if(checked_branch.length>0){
+            branch=checked_branch[0].value;
+        }
+    }
+    
+   
+    
+    
+    if(checked_caste.length>0 && checked_gender.length>0 ){
+        
         caste = checked_caste[0].value;
         gender= checked_gender[0].value;
         submit=true;
@@ -33,9 +59,9 @@ btn[0].addEventListener("click",function(){
         submit=true;
         rank=parseInt(rank);
     }
-    
+   
     var cst=caste+" "+gender;
- 
+    
     if(submit){
         //getting the data from web server JSONBIN.io
 
@@ -43,7 +69,12 @@ btn[0].addEventListener("click",function(){
         if (req.readyState == XMLHttpRequest.DONE) {
             json_data = JSON.parse(req.responseText);
             
-            var new_json=JSON.parse(JSON.stringify(get_data(json_data,rank,cst,branch)));
+            if(branch==''){
+                var new_json=JSON.parse(JSON.stringify(get_data_no_branch(json_data,rank,cst)));
+            }else{
+                var new_json=JSON.parse(JSON.stringify(get_data_w_branch(json_data,rank,cst,branch)));
+            }
+            
             var res =[];
             var len=(Object.keys(new_json).length);
             for(let i =0; i< len; i++){
@@ -53,7 +84,7 @@ btn[0].addEventListener("click",function(){
             res.sort(function (a,b){
                return a[cst] - b[cst];
             })
-          
+        
             render_data(res,cst, rank);
         }
     };
@@ -66,14 +97,27 @@ btn[0].addEventListener("click",function(){
     }
 });
 
-function get_data(json_data1,rank,caste,branch){
+}
+
+function get_data_w_branch(json_data1,rank,caste,branch){
     var new_data= {};
     var j=0;
-    
+ 
     for(let i=0;i< json_data1.length; i++){
-            var rk_low=rank-1000>0?rank-1000:rank;
-            var rk_high=rank+20000;
-          if(json_data1[i].BRANCH==branch && json_data1[i][caste] >= rk_low && json_data1[i][caste]<= rk_high){
+          if(json_data1[i].BRANCH==branch && json_data1[i][caste] >= (rank-1000) && json_data1[i][caste]<=rank+20000){
+              new_data[j]= json_data[i];
+              j++;
+          }
+    }
+    return new_data;
+}
+
+function get_data_no_branch(json_data1,rank,caste){
+    var new_data= {};
+    var j=0;
+
+    for(let i=0;i< json_data1.length; i++){
+          if(json_data1[i][caste] >= (rank-1000) && json_data1[i][caste]<=rank+10000){
               new_data[j]= json_data[i];
               j++;
           }
@@ -99,7 +143,8 @@ function render_data(json_file,caste,rank) {
           }
     }
 
-   
+    // console.log(data);
+    // console.log(labels);
     if(window.myChart instanceof Chart)
     {
         window.myChart.destroy();
@@ -131,6 +176,8 @@ function render_data(json_file,caste,rank) {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
+      responsiveAnimationDuration: 2,
       scales: {
         xAxes: [ {
           display: true,
@@ -154,5 +201,44 @@ function render_data(json_file,caste,rank) {
     } 
     
     }});
+    render_table(json_file,caste);
+}
 
+function render_table(json_file,caste){
+    var table = document.getElementById('mytable');
+    table.innerHTML='';
+    var th1=document.createElement('th');
+    var th2=document.createElement('th');
+    var th3=document.createElement('th');
+    var tr=document.createElement('tr');
+    var textnode1 = document.createTextNode("College Name");
+    var textnode2 = document.createTextNode("Branch");
+    var textnode3 = document.createTextNode("Cut-Off");
+    th1.appendChild(textnode1);
+    th2.appendChild(textnode2);
+    th3.appendChild(textnode3);
+    tr.appendChild(th1);
+    tr.appendChild(th2);
+    tr.appendChild(th3);
+    table.appendChild(tr);
+
+    for (var i = 1; i < json_file.length; i++){
+        var tr1=document.createElement('tr');
+        var td1 = document.createElement('td');
+        var td2 = document.createElement('td');
+        var td3 = document.createElement('td');
+
+        var text1 = document.createTextNode(json_file[i]['INSTITUTE NAME']);
+        var text2 = document.createTextNode(json_file[i]['BRANCH NAME']);
+        var text3 = document.createTextNode(json_file[i][caste]);
+
+        td1.appendChild(text1);
+        td2.appendChild(text2);
+        td3.appendChild(text3);
+        tr1.appendChild(td1);
+        tr1.appendChild(td2);
+        tr1.appendChild(td3);
+
+        table.appendChild(tr1);
+    }
 }
