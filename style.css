@@ -31,7 +31,7 @@ body{
   
   /* Style the submit button */
   .btn {
-    background-color: #4CAF50;
+    background-color: #2b6cce;
     /* background-color: #1c1427; */
     color: white;
     padding: 12px 20px;
@@ -164,6 +164,6 @@ body{
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: #4CAF50;
+  background-color: #2b6cce;
   color: white;
 }
